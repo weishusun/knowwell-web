@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { LoginDialog } from '@/components/auth/LoginDialog';
 
 const navItems = [
   { label: "What's New", href: '/whats-new' },
@@ -13,10 +14,16 @@ const navItems = [
 ];
 
 export function HomeNavbar() {
+  const [loginOpen, setLoginOpen] = useState(false);
+
   const handleLoginClick = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('open-login-modal'));
-    }
+    setLoginOpen(true);
+  }, []);
+
+  useEffect(() => {
+    const listener = () => setLoginOpen(true);
+    window.addEventListener('open-login-modal', listener);
+    return () => window.removeEventListener('open-login-modal', listener);
   }, []);
 
   return (
@@ -51,6 +58,8 @@ export function HomeNavbar() {
           </button>
         </div>
       </div>
+
+      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
     </header>
   );
 }
