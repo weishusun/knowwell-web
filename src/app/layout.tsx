@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
-import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { CookieSettingsManager } from '@/components/cookie/CookieSettingsManager';
 import { Providers } from '@/components/providers';
@@ -19,7 +18,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable}`}>
       <body className="min-h-screen bg-slate-50">
         <Providers>
-          <Navbar />
           <main className="min-h-[70vh]">{children}</main>
           <Footer />
           <CookieSettingsManager />
