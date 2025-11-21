@@ -1,5 +1,3 @@
-import { HomeNavbar } from '@/components/home/home-navbar';
-
 const aboutContent = `KnowWell is built by a collective of curious writers, editors, and researchers who believe that informed choices lead to better lives. We dive deep into the products, experiences, and stories that shape culture, sharing insights that are both practical and inspiring.
 
 Our team blends journalistic rigor with lived experience. We interview experts, test products, and listen to the community to surface perspectives that feel human, not corporate. Every piece we publish is guided by empathy and a commitment to clarity.
@@ -27,8 +25,6 @@ const contacts = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f3ecff] via-[#f7f5ff] to-white text-slate-900">
-      <HomeNavbar activeHref="/about" />
-
       <main className="container-page gap-12">
         <section className="relative overflow-hidden rounded-3xl border border-purple-100 bg-white shadow-xl">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.08),_transparent_45%),_radial-gradient(circle_at_bottom_right,_rgba(99,102,241,0.08),_transparent_45%)]" />
