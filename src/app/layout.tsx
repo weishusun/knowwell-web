@@ -3,7 +3,7 @@ import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { CookieBanner } from '@/components/cookie-banner';
+import { CookieSettingsManager } from '@/components/cookie/CookieSettingsManager';
 import { Providers } from '@/components/providers';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Navbar />
           <main className="min-h-[70vh]">{children}</main>
           <Footer />
-          <CookieBanner />
+          <CookieSettingsManager />
         </Providers>
       </body>
     </html>
