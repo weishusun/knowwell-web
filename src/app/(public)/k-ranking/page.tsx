@@ -1,13 +1,9 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
-
-type RankingCategory = {
-  name: string;
-  description: string;
-  image: string;
-};
+import { kRankingCategories } from '@/components/k-ranking/categoryData';
 
 type RankingItem = {
   id: string;
@@ -16,39 +12,6 @@ type RankingItem = {
   image: string;
   category: string;
 };
-
-const categories: RankingCategory[] = [
-  {
-    name: 'Education',
-    description: 'Insights for lifelong learners and students.',
-    image: 'https://images.unsplash.com/photo-1513258496099-48168024aec0?auto=format&fit=crop&w=900&q=80'
-  },
-  {
-    name: 'Technology',
-    description: 'Latest gadgets and innovations ranked by users.',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80'
-  },
-  {
-    name: 'Fashion',
-    description: 'Styles and brands defining the season.',
-    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=80'
-  },
-  {
-    name: 'Lifestyle',
-    description: 'Balance, wellness, and everyday inspiration.',
-    image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=900&q=80'
-  },
-  {
-    name: 'Beauty & Skincare',
-    description: 'Top routines and must-try products.',
-    image: 'https://images.unsplash.com/photo-1506617420156-8e4536971650?auto=format&fit=crop&w=900&q=80'
-  },
-  {
-    name: 'Family & Kids',
-    description: 'Guides and picks for every stage of family life.',
-    image: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=900&q=80'
-  }
-];
 
 const latestRankings: RankingItem[] = [
   {
@@ -173,27 +136,31 @@ export default function KRankingPage() {
           </div>
           <p className="hidden text-sm text-slate-500 md:block">Tap a category to see curated rankings from the community.</p>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {categories.map((category) => (
-            <div
-              key={category.name}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {kRankingCategories.map((category) => (
+            <Link
+              key={category.slug}
+              href={category.path}
               className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card transition hover:-translate-y-1 hover:shadow-xl"
             >
+              <div className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-lg shadow-sm">
+                {category.icon}
+              </div>
               <div className="relative h-36 w-full overflow-hidden">
                 <Image
                   src={category.image}
-                  alt={category.name}
+                  alt={category.label}
                   fill
                   className="object-cover transition duration-500 group-hover:scale-105"
-                  sizes="(min-width: 1280px) 200px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  sizes="(min-width: 1280px) 250px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
               </div>
               <div className="flex flex-col gap-2 px-4 py-4">
-                <h3 className="text-lg font-semibold text-slate-900">{category.name}</h3>
-                <p className="text-xs text-slate-600 line-clamp-2">{category.description}</p>
+                <h3 className="text-lg font-semibold text-slate-900">{category.label}</h3>
+                <p className="text-xs text-slate-600 line-clamp-2">Click to view the latest {category.label} rankings.</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
