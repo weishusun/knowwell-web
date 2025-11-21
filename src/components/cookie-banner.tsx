@@ -2,16 +2,31 @@
 
 import { useEffect, useState } from 'react';
 
-export function CookieBanner() {
+interface CookieBannerProps {
+  onOpenSettings?: () => void;
+}
+
+export function CookieBanner({ onOpenSettings }: CookieBannerProps) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const consent = localStorage.getItem('kw-cookie-consent');
     if (!consent) setOpen(true);
+
+    const handleConsentUpdate = () => {
+      const latestConsent = localStorage.getItem('kw-cookie-consent');
+      if (latestConsent) {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener('kw-cookie-consent-updated', handleConsentUpdate);
+    return () => window.removeEventListener('kw-cookie-consent-updated', handleConsentUpdate);
   }, []);
 
   const accept = () => {
     localStorage.setItem('kw-cookie-consent', 'accepted');
+    window.dispatchEvent(new Event('kw-cookie-consent-updated'));
     setOpen(false);
   };
 
@@ -36,6 +51,9 @@ export function CookieBanner() {
           </button>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-3">
+          <button className="text-sm font-semibold text-slate-500 hover:text-slate-700" onClick={onOpenSettings}>
+            Cookie settings
+          </button>
           <button className="btn-secondary" onClick={() => setOpen(false)}>
             Maybe later
           </button>

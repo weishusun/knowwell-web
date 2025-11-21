@@ -6,6 +6,7 @@ import { LatestReviewsList, type Note } from '@/components/home/latest-reviews-l
 import { PopularNotesSection } from '@/components/home/popular-notes-section';
 import { SiteFooter } from '@/components/home/site-footer';
 import { TrendingRankingSection } from '@/components/home/trending-ranking-section';
+import { CookieSettingsLauncher } from '@/components/cookie/CookieSettingsLauncher';
 
 async function getNotes(): Promise<Note[]> {
   try {
@@ -32,6 +33,15 @@ export default async function HomePage() {
         <PopularNotesSection notes={notes} />
         <AboutKnowWellSection />
       </main>
+      <div className="container-page pb-12">
+        <div className="flex flex-col gap-3 rounded-2xl border border-purple-100 bg-purple-50 px-6 py-5 text-purple-900 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-sm font-semibold">Need to update your cookie preferences?</p>
+            <p className="text-xs text-purple-800">Open the Cookie Settings dialog anytime to manage your choices.</p>
+          </div>
+          <CookieSettingsLauncher />
+        </div>
+      </div>
       <SiteFooter />
     </div>
   );
