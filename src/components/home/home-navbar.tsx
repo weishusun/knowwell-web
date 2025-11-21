@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { LoginDialog } from '@/components/auth/LoginDialog';
 
 const navItems = [
@@ -13,8 +14,20 @@ const navItems = [
   { label: 'To Business', href: '/business' }
 ];
 
-export function HomeNavbar() {
+type HomeNavbarProps = {
+  activeHref?: string;
+  activeLabel?: string;
+};
+
+export function HomeNavbar({ activeHref, activeLabel }: HomeNavbarProps) {
   const [loginOpen, setLoginOpen] = useState(false);
+  const pathname = usePathname();
+
+  const activeKey = useMemo(() => {
+    if (activeHref) return activeHref;
+    const matchingItem = navItems.find((item) => pathname?.startsWith(item.href));
+    return matchingItem?.href ?? pathname;
+  }, [activeHref, pathname]);
 
   const handleLoginClick = useCallback(() => {
     setLoginOpen(true);
@@ -41,7 +54,11 @@ export function HomeNavbar() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-full px-4 py-2 transition hover:bg-purple-50 hover:text-purple-700"
+              className={`rounded-full px-4 py-2 transition hover:bg-purple-50 hover:text-purple-700 ${
+                item.href === activeKey || item.label === activeLabel
+                  ? 'bg-purple-600 text-white shadow-lg hover:bg-purple-600'
+                  : ''
+              }`}
             >
               {item.label}
             </Link>
