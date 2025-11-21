@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { HomeNavbar } from '@/components/home/home-navbar';
 
 const smartphoneBrands = ['Apple', 'Samsung', 'Google', 'OnePlus', 'Xiaomi', 'Oppo'];
 const carBrands = ['BMW', 'Mercedes-Benz', 'Audi', 'Tesla', 'Hyundai', 'Kia'];
@@ -33,8 +32,6 @@ function BrandGrid({ title, brands }: { title: string; brands: string[] }) {
 export default function BrandsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f4f0ff] via-white to-white text-slate-900">
-      <HomeNavbar activeLabel="Smart Buy" />
-
       <main className="container-page flex flex-col gap-10 pb-16 pt-8 md:gap-12 md:pt-12">
         <header className="relative overflow-hidden rounded-3xl border border-purple-100 bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-500 px-6 py-10 text-white shadow-xl md:px-12 md:py-14">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.18),_transparent_35%),_radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.18),_transparent_35%)]" />
