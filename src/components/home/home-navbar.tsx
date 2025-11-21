@@ -6,12 +6,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { LoginDialog } from '@/components/auth/LoginDialog';
 
 const navItems = [
-  { label: "What's New", href: '/whats-new' },
+  { label: "What's New", href: '/' },
   { label: 'K-Ranking', href: '/k-ranking' },
   { label: 'K-Note', href: '/k-note' },
-  { label: 'Smart Buy', href: '/smart-buy' },
-  { label: 'Write a review', href: '/reviews' },
-  { label: 'To Business', href: '/business' }
+  { label: 'Write a review', href: '/write-review' },
+  { label: 'Brands', href: '/brands' },
+  { label: 'About Us', href: '/about' }
 ];
 
 type HomeNavbarProps = {
@@ -66,6 +66,12 @@ export function HomeNavbar({ activeHref, activeLabel }: HomeNavbarProps) {
         </nav>
 
         <div className="flex items-center gap-3">
+          <Link
+            href="/business"
+            className="hidden rounded-full border border-purple-200 px-5 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-50 lg:inline-flex lg:items-center lg:justify-center"
+          >
+            To Business
+          </Link>
           <button
             type="button"
             onClick={handleLoginClick}
