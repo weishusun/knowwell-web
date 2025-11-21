@@ -9,11 +9,11 @@ export function SiteFooter() {
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-lg font-bold">K</span>
             <span className="text-xl font-bold">KnowWell</span>
           </div>
-          <p className="text-sm leading-relaxed text-purple-50">
+          <p className="text-sm leading-relaxed text-white/80">
             KnowWell is a new friend for every new experience. We gather and amplify authentic voices to guide better decisions
             for modern consumers.
           </p>
-          <div className="space-y-2 text-sm text-purple-50">
+          <div className="space-y-2 text-sm text-white/80">
             <p className="font-semibold text-white">Contact:</p>
             <p>jingxuanjiang@knowwell.org</p>
             <p>janengu@knowwell.org</p>
@@ -23,7 +23,7 @@ export function SiteFooter() {
 
         <div>
           <h3 className="mb-3 text-lg font-semibold">Newsletter</h3>
-          <p className="text-sm text-purple-50">
+          <p className="text-sm text-white/80">
             Subscribe for product trends, featured reviews, and ranking updates.
           </p>
           <form className="mt-4 flex flex-col gap-3 sm:flex-row">
@@ -41,27 +41,27 @@ export function SiteFooter() {
           </form>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 text-sm text-purple-50">
+        <div className="grid grid-cols-2 gap-6 text-sm">
           <div className="space-y-2">
             <h4 className="text-base font-semibold text-white">Explore</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/whats-new" className="hover:text-white">
+                <Link href="/whats-new" className="text-white/90 hover:text-white">
                   What's New
                 </Link>
               </li>
               <li>
-                <Link href="/k-ranking" className="hover:text-white">
+                <Link href="/k-ranking" className="text-white/90 hover:text-white">
                   K-Ranking
                 </Link>
               </li>
               <li>
-                <Link href="/k-note" className="hover:text-white">
+                <Link href="/k-note" className="text-white/90 hover:text-white">
                   K-Note
                 </Link>
               </li>
               <li>
-                <Link href="/smart-buy" className="hover:text-white">
+                <Link href="/smart-buy" className="text-white/90 hover:text-white">
                   Smart Buy
                 </Link>
               </li>
@@ -71,22 +71,22 @@ export function SiteFooter() {
             <h4 className="text-base font-semibold text-white">Company</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/business" className="hover:text-white">
+                <Link href="/business" className="text-white/90 hover:text-white">
                   To Business
                 </Link>
               </li>
               <li>
-                <Link href="/reviews" className="hover:text-white">
+                <Link href="/reviews" className="text-white/90 hover:text-white">
                   Write a review
                 </Link>
               </li>
               <li>
-                <Link href="/" className="hover:text-white">
+                <Link href="/" className="text-white/90 hover:text-white">
                   About KnowWell
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-white">
+                <Link href="/privacy-policy" className="text-white/90 hover:text-white">
                   Privacy & Terms
                 </Link>
               </li>
