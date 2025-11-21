@@ -66,7 +66,7 @@ export function LoginDialog({ open, onClose }: LoginDialogProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       onClick={handleBackdropClick}
       aria-modal
       role="dialog"
