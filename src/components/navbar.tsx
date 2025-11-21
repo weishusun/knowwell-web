@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { LoginDialog } from '@/components/auth/LoginDialog';
 
 const links = [
   { href: '/', label: 'Home' },
@@ -13,6 +14,7 @@ const links = [
 export function Navbar() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [loginOpen, setLoginOpen] = useState(false);
 
   const isActive = useMemo(
     () => (href: string) => (pathname === href ? 'text-brand-700' : 'text-slate-700'),
@@ -52,9 +54,9 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/login" className="btn-secondary">
+              <button type="button" className="btn-secondary" onClick={() => setLoginOpen(true)}>
                 Log in
-              </Link>
+              </button>
               <Link href="/register" className="btn-primary">
                 Sign up
               </Link>
@@ -62,6 +64,8 @@ export function Navbar() {
           )}
         </div>
       </div>
+
+      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
     </header>
   );
 }
