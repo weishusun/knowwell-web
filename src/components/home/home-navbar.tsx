@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { signOut, useSession } from 'next-auth/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import AuthModal from '@/components/auth/AuthModal';
 
@@ -22,6 +23,8 @@ type HomeNavbarProps = {
 export function HomeNavbar({ activeHref, activeLabel }: HomeNavbarProps) {
   const [loginOpen, setLoginOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = useSession();
 
   const activeKey = useMemo(() => {
     if (activeHref) return activeHref;
@@ -32,6 +35,18 @@ export function HomeNavbar({ activeHref, activeLabel }: HomeNavbarProps) {
   const handleLoginClick = useCallback(() => {
     setLoginOpen(true);
   }, []);
+
+  const handleLogout = useCallback(async () => {
+    await signOut({ redirect: false });
+    router.refresh();
+  }, [router]);
+
+  const displayName = useMemo(
+    () => session?.user?.name || session?.user?.email || 'User',
+    [session?.user?.email, session?.user?.name]
+  );
+
+  const initial = useMemo(() => displayName.charAt(0).toUpperCase(), [displayName]);
 
   useEffect(() => {
     const listener = () => setLoginOpen(true);
@@ -73,13 +88,29 @@ export function HomeNavbar({ activeHref, activeLabel }: HomeNavbarProps) {
             >
               To Business
             </Link>
-            <button
-              type="button"
-              onClick={handleLoginClick}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-purple-600 px-5 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-purple-700"
-            >
-              Log in
-            </button>
+            {session ? (
+              <div className="flex items-center gap-3 rounded-full border border-purple-100 bg-white px-3 py-2 shadow-sm">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700">
+                  {initial}
+                </div>
+                <span className="max-w-[140px] truncate text-sm font-semibold text-slate-800">{displayName}</span>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-slate-200"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleLoginClick}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-purple-600 px-5 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-purple-700"
+              >
+                Log in
+              </button>
+            )}
           </div>
         </div>
       </header>
