@@ -204,7 +204,7 @@ export function AuthModal({ open = true, onClose, defaultTab = "email" }: AuthMo
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 sm:p-6"
       onClick={handleBackdropClick}
       aria-modal
       role="dialog"
@@ -289,8 +289,19 @@ export function AuthModal({ open = true, onClose, defaultTab = "email" }: AuthMo
                 className="relative inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-purple-500 via-purple-600 to-purple-500 px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white shadow-lg transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <span className="absolute inset-0 bg-white/10 opacity-0 transition-opacity duration-300 hover:opacity-10" />
-                <span className="relative">{loginLoading ? "Logging in..." : "Login"}</span>
-              </button>
+              <span className="relative">{loginLoading ? "Logging in..." : "Login"}</span>
+            </button>
+
+              <div className="text-center text-sm text-gray-400">
+                No account?
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("signup")}
+                  className="ml-2 font-semibold text-purple-300 transition hover:text-purple-200"
+                >
+                  Sign up
+                </button>
+              </div>
             </form>
           )}
 
