@@ -1,21 +1,21 @@
-import { Prisma } from '@prisma/client';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-import { NextRequest, NextResponse } from 'next/server';
+import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = 'force-dynamic';
+const DEFAULT_TAKE = 20;
+const DEFAULT_SKIP = 0;
 
 function normalizeTags(tags: string[] | string | null | undefined): string[] {
   if (Array.isArray(tags)) {
     return tags
-      .map((tag) => (typeof tag === 'string' ? tag.trim() : ''))
+      .map((tag) => (typeof tag === "string" ? tag.trim() : ""))
       .filter(Boolean);
   }
 
-  if (typeof tags === 'string') {
+  if (typeof tags === "string") {
     return tags
-      .split(',')
+      .split(",")
       .map((tag) => tag.trim())
       .filter(Boolean);
   }
@@ -23,75 +23,67 @@ function normalizeTags(tags: string[] | string | null | undefined): string[] {
   return [];
 }
 
+function parseNumberParam(value: string | null, fallback: number): number {
+  const parsed = Number.parseInt(value ?? "", 10);
+  return Number.isNaN(parsed) ? fallback : Math.max(parsed, 0);
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category') ?? undefined;
-    const authorId = searchParams.get('authorId') ?? undefined;
-    const takeParam = Number.parseInt(searchParams.get('take') || '20', 10);
-    const skipParam = Number.parseInt(searchParams.get('skip') || '0', 10);
+    const category = searchParams.get("category") ?? undefined;
+    const take = parseNumberParam(searchParams.get("take"), DEFAULT_TAKE);
+    const skip = parseNumberParam(searchParams.get("skip"), DEFAULT_SKIP);
 
-    const take = Number.isNaN(takeParam) ? 20 : Math.min(Math.max(takeParam, 0), 100);
-    const skip = Number.isNaN(skipParam) ? 0 : Math.max(skipParam, 0);
+    const where = {
+      isPublished: true,
+      ...(category ? { category } : {}),
+    };
 
-    let session = null;
-    if (authorId) {
-      session = await getServerSession(authOptions);
-      if (!session?.user?.id || session.user.id !== authorId) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-    }
+    const [kNotes, count] = await Promise.all([
+      prisma.kNote.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take,
+        skip,
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
+      }),
+      prisma.kNote.count({ where }),
+    ]);
 
-    const where: Prisma.KNoteWhereInput = {};
-
-    if (category) {
-      where.category = category;
-    }
-
-    if (authorId) {
-      where.authorId = authorId;
-    } else {
-      where.isPublished = true;
-    }
-
-    const kNotes = await prisma.kNote.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take,
-      skip,
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            image: true
-          }
-        }
-      }
+    return NextResponse.json({
+      data: kNotes,
+      meta: { take, skip, count },
     });
-
-    return NextResponse.json(kNotes);
   } catch (error) {
-    console.error('[K_NOTES_GET]', error);
-    return NextResponse.json({ error: 'Unable to fetch K-Notes.' }, { status: 500 });
+    console.error("[K_NOTES_GET]", error);
+    return NextResponse.json({ error: "Unable to fetch K-Notes." }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { title, summary, content, category, tags, coverImageUrl, isPublished } = body;
-
-    if (!title) {
-      return NextResponse.json({ error: 'Title is required.' }, { status: 400 });
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const kNote = await prisma.kNote.create({
+    const body = await request.json();
+    const { title, summary, content, category, tags, coverImageUrl, isPublished } = body ?? {};
+
+    if (!title || !content || !category) {
+      return NextResponse.json({ error: "Title, content, and category are required." }, { status: 400 });
+    }
+
+    const created = await prisma.kNote.create({
       data: {
         title,
         summary,
@@ -100,22 +92,22 @@ export async function POST(request: Request) {
         tags: normalizeTags(tags),
         coverImageUrl,
         isPublished: Boolean(isPublished),
-        authorId: session.user.id
+        authorId: session.user.id,
       },
       include: {
         author: {
           select: {
             id: true,
             name: true,
-            image: true
-          }
-        }
-      }
+            image: true,
+          },
+        },
+      },
     });
 
-    return NextResponse.json(kNote, { status: 201 });
+    return NextResponse.json({ data: created }, { status: 201 });
   } catch (error) {
-    console.error('[K_NOTES_POST]', error);
-    return NextResponse.json({ error: 'Unable to create K-Note.' }, { status: 500 });
+    console.error("[K_NOTES_POST]", error);
+    return NextResponse.json({ error: "Unable to create K-Note." }, { status: 500 });
   }
 }
