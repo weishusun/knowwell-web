@@ -1,6 +1,11 @@
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
+import { notFound } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+
+import { authOptions } from '@/lib/auth';
+
+import NoteActions from './NoteActions';
 
 interface KNoteDetailProps {
   params: { id: string };
@@ -37,6 +42,7 @@ async function fetchKNote(baseUrl: string, id: string): Promise<KNoteResponse | 
 }
 
 export default async function KNoteDetailPage({ params }: KNoteDetailProps) {
+  const session = await getServerSession(authOptions);
   const host = headers().get('host');
   const protocol = host?.includes('localhost') ? 'http' : 'https';
   const baseUrl = process.env.NEXTAUTH_URL || (host ? `${protocol}://${host}` : '');
@@ -53,6 +59,7 @@ export default async function KNoteDetailPage({ params }: KNoteDetailProps) {
   const tags = Array.isArray(kNote.tags) ? kNote.tags : [];
 
   const authorInitial = kNote.author?.name?.[0]?.toUpperCase() ?? 'K';
+  const isAuthor = kNote.author?.id === session?.user?.id;
 
   return (
     <article className="space-y-8 pb-16">
@@ -71,8 +78,14 @@ export default async function KNoteDetailPage({ params }: KNoteDetailProps) {
               </span>
             ))}
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{kNote.title}</h1>
-        {kNote.summary ? <p className="text-lg text-gray-700">{kNote.summary}</p> : null}
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-3">
+            <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">{kNote.title}</h1>
+            {kNote.summary ? <p className="text-lg text-gray-700">{kNote.summary}</p> : null}
+          </div>
+
+          {isAuthor ? <NoteActions noteId={kNote.id} /> : null}
+        </div>
         <div className="flex items-center gap-4 text-sm text-gray-600">
           {kNote.author?.image ? (
             <Image

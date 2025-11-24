@@ -129,12 +129,22 @@ export default function MyKNotesPage() {
                         >
                           View
                         </button>
-                        <button
-                          onClick={() => handleDelete(note.id)}
-                          className="rounded-md border border-red-200 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"
-                        >
-                          Delete
-                        </button>
+                        {note.author?.id === session?.user?.id ? (
+                          <>
+                            <Link
+                              href={`/k-note/${note.id}/edit`}
+                              className="rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                            >
+                              Edit
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(note.id)}
+                              className="rounded-md border border-red-200 px-3 py-1 text-xs font-semibold text-red-700 hover:bg-red-50"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        ) : null}
                       </div>
                     </td>
                   </tr>
