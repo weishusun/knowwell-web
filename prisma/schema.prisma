@@ -67,3 +67,14 @@ model Review {
   noteId    String
   createdAt DateTime @default(now())
 }
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  email     String
+  codeHash  String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([expiresAt])
+}
