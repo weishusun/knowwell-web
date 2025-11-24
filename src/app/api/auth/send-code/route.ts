@@ -27,38 +27,31 @@ export async function POST(request: Request) {
       }
     });
 
-    // SMTP configuration (common env names). If any are missing, email sending is skipped.
-    // Required env vars: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM
-    const smtpHost = process.env.SMTP_HOST;
-    const smtpPort = process.env.SMTP_PORT;
-    const smtpUser = process.env.SMTP_USER;
-    const smtpPass = process.env.SMTP_PASS;
-    const smtpFrom = process.env.SMTP_FROM;
+    // Resend configuration (common env names). If any are missing, email sending is skipped.
+    // Required env vars: RESEND_API_KEY, RESEND_FROM
+    const resendApiKey = process.env.RESEND_API_KEY;
+    const resendFrom = process.env.RESEND_FROM;
 
-    if (smtpHost && smtpPort && smtpUser && smtpPass && smtpFrom) {
+    if (resendApiKey && resendFrom) {
       try {
-        const nodemailer = await import('nodemailer');
-        const transporter = nodemailer.createTransport({
-          host: smtpHost,
-          port: Number(smtpPort),
-          auth: {
-            user: smtpUser,
-            pass: smtpPass
-          }
-        });
-
-        await transporter.sendMail({
-          from: smtpFrom,
-          to: email,
-          subject: 'KnowWell verification code',
-          text: `Your verification code is ${code}. It expires in 10 minutes.`
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${resendApiKey}`
+          },
+          body: JSON.stringify({
+            from: resendFrom,
+            to: [email],
+            subject: 'KnowWell verification code',
+            html: `<p>Your verification code is <strong>${code}</strong>. It expires in 10 minutes.</p>`,
+            text: `Your verification code is ${code}. It expires in 10 minutes.`
+          })
         });
       } catch (mailError) {
         console.error('[AUTH_SEND_CODE_EMAIL]', mailError);
       }
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
+    } else {
       console.log(`[AUTH_CODE] ${email} -> ${code} (valid 10 min)`);
     }
 
