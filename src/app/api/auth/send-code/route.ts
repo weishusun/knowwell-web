@@ -27,6 +27,37 @@ export async function POST(request: Request) {
       }
     });
 
+    // SMTP configuration (common env names). If any are missing, email sending is skipped.
+    // Required env vars: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM
+    const smtpHost = process.env.SMTP_HOST;
+    const smtpPort = process.env.SMTP_PORT;
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+    const smtpFrom = process.env.SMTP_FROM;
+
+    if (smtpHost && smtpPort && smtpUser && smtpPass && smtpFrom) {
+      try {
+        const nodemailer = await import('nodemailer');
+        const transporter = nodemailer.createTransport({
+          host: smtpHost,
+          port: Number(smtpPort),
+          auth: {
+            user: smtpUser,
+            pass: smtpPass
+          }
+        });
+
+        await transporter.sendMail({
+          from: smtpFrom,
+          to: email,
+          subject: 'KnowWell verification code',
+          text: `Your verification code is ${code}. It expires in 10 minutes.`
+        });
+      } catch (mailError) {
+        console.error('[AUTH_SEND_CODE_EMAIL]', mailError);
+      }
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       console.log(`[AUTH_CODE] ${email} -> ${code} (valid 10 min)`);
     }
