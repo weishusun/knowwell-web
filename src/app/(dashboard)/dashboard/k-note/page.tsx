@@ -80,7 +80,7 @@ export default function MyKNotesPage() {
             <h1 className="text-2xl font-semibold text-slate-900">My K-Notes</h1>
             <p className="text-sm text-slate-600">Manage your drafts and published posts.</p>
           </div>
-          <Link href="/k-note/new" className="btn-primary">
+          <Link href="/dashboard/k-note/new" className="btn-primary">
             New K-Note
           </Link>
         </div>
