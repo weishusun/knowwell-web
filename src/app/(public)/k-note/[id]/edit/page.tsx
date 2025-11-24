@@ -7,7 +7,7 @@ interface NoteResponse {
   id: string;
   title: string;
   content: string;
-  coverUrl?: string | null;
+  coverImageUrl?: string | null;
   tags?: string[] | null;
 }
 
@@ -41,7 +41,7 @@ export default function EditNotePage({ params }: PageProps) {
       setNotFound(false);
 
       try {
-        const response = await fetch(`/api/notes/${params.id}`, { cache: 'no-store' });
+        const response = await fetch(`/api/k-notes/${params.id}`, { cache: 'no-store' });
 
         if (!isMounted) return;
 
@@ -61,13 +61,13 @@ export default function EditNotePage({ params }: PageProps) {
         setFormState({
           title: note.title ?? '',
           content: note.content ?? '',
-          coverUrl: note.coverUrl ?? '',
+          coverUrl: note.coverImageUrl ?? '',
           tags,
         });
         setInitialData({
           title: note.title ?? '',
           content: note.content ?? '',
-          coverUrl: note.coverUrl ?? '',
+          coverUrl: note.coverImageUrl ?? '',
           tags,
         });
       } catch (error) {
@@ -101,7 +101,7 @@ export default function EditNotePage({ params }: PageProps) {
 
     if (formState.title !== initialData.title) payload.title = formState.title;
     if (formState.content !== initialData.content) payload.content = formState.content;
-    if (formState.coverUrl !== initialData.coverUrl) payload.coverUrl = formState.coverUrl || null;
+    if (formState.coverUrl !== initialData.coverUrl) payload.coverImageUrl = formState.coverUrl || null;
 
     const currentTags = formState.tags
       .split(',')
@@ -132,7 +132,7 @@ export default function EditNotePage({ params }: PageProps) {
     setToast(null);
 
     try {
-      const response = await fetch(`/api/notes/${params.id}`, {
+      const response = await fetch(`/api/k-notes/${params.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(changedPayload),
