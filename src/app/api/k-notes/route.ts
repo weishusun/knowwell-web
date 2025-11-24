@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       ...(category ? { category } : {}),
     };
 
-    const [kNotes, count] = await Promise.all([
+    const [kNotes, _count] = await Promise.all([
       prisma.kNote.findMany({
         where,
         orderBy: { createdAt: "desc" },
@@ -59,10 +59,7 @@ export async function GET(request: NextRequest) {
       prisma.kNote.count({ where }),
     ]);
 
-    return NextResponse.json({
-      data: kNotes,
-      meta: { take, skip, count },
-    });
+    return NextResponse.json(kNotes);
   } catch (error) {
     console.error("[K_NOTES_GET]", error);
     return NextResponse.json({ error: "Unable to fetch K-Notes." }, { status: 500 });
