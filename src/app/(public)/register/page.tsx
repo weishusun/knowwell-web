@@ -1,92 +1,25 @@
 'use client';
 
-import Link from 'next/link';
-import { FormEvent, useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import AuthModal from '@/components/auth/AuthModal';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(true);
 
-  const onSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, name })
-    });
-
-    setLoading(false);
-
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.error ?? 'Unable to register.');
-      return;
-    }
-
-    await signIn('credentials', { email, password, redirect: false });
+  const handleClose = () => {
+    setOpen(false);
     router.push('/');
   };
 
   return (
-    <div className="container-page max-w-xl">
-      <div className="card">
-        <h1 className="text-2xl font-semibold text-slate-900">Create your account</h1>
-        <p className="text-sm text-slate-600">Publish stunning notes and invite feedback.</p>
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-black to-slate-950">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(168,85,247,0.35),transparent_30%),radial-gradient(circle_at_80%_30%,rgba(167,139,250,0.25),transparent_30%)]" />
+      <div className="absolute inset-0 bg-black/50" />
 
-        <form onSubmit={onSubmit} className="mt-6 space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="name">Name</label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              placeholder="Your name"
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              required
-              placeholder="you@example.com"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              required
-              placeholder="••••••••"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <button disabled={loading} type="submit" className="btn-primary w-full">
-            {loading ? 'Creating...' : 'Create account'}
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-sm text-slate-600">
-          Already have an account?{' '}
-          <Link href="/login" className="text-brand-700">
-            Log in
-          </Link>
-        </p>
+      <div className="relative flex min-h-screen items-center justify-center p-6">
+        <AuthModal open={open} onClose={handleClose} defaultTab="signup" />
       </div>
     </div>
   );

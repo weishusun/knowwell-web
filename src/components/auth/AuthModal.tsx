@@ -404,3 +404,5 @@ export function AuthModal({ open = true, onClose, defaultTab = "email" }: AuthMo
     </div>
   );
 }
+
+export default AuthModal;

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { LoginModal } from '@/components/home/LoginModal';
+import AuthModal from '@/components/auth/AuthModal';
 
 const navItems = [
   { label: "What's New", href: '/' },
@@ -82,7 +82,7 @@ export function HomeNavbar({ activeHref, activeLabel }: HomeNavbarProps) {
         </div>
       </div>
 
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+      <AuthModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </header>
   );
 }
