@@ -26,6 +26,8 @@ function normalizeTags(tags: string[] | string | null | undefined): string[] {
 
 export async function GET(_request: Request, { params }: Params) {
   try {
+    const session = await getServerSession(authOptions);
+
     const kNote = await prisma.kNote.findUnique({
       where: { id: params.id },
       include: {
@@ -43,7 +45,12 @@ export async function GET(_request: Request, { params }: Params) {
       return NextResponse.json({ error: "K-Note not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ data: kNote });
+    const isOwner = session?.user?.id === kNote.authorId;
+    if (!kNote.isPublished && !isOwner) {
+      return NextResponse.json({ error: "K-Note not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(kNote);
   } catch (error) {
     console.error("[K_NOTE_GET]", error);
     return NextResponse.json({ error: "Unable to fetch K-Note." }, { status: 500 });
