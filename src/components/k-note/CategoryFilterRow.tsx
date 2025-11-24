@@ -4,14 +4,15 @@ import { useMemo } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const categories = [
-  { key: 'Technology', icon: '💻' },
-  { key: 'Travel', icon: '✈️' },
-  { key: 'Finance', icon: '💰' },
-  { key: 'Health', icon: '🩺' },
-  { key: 'Lifestyle', icon: '🌿' },
-  { key: 'Education', icon: '🎓' },
-  { key: 'Business', icon: '🏢' },
-  { key: 'Sports', icon: '🏅' }
+  'All',
+  'Technology',
+  'Education',
+  'Travel',
+  'Fashion',
+  'Lifestyle',
+  'Beauty',
+  'Automobile',
+  'Family & Kids'
 ];
 
 interface CategoryFilterRowProps {
@@ -28,7 +29,7 @@ export default function CategoryFilterRow({ selectedCategory }: CategoryFilterRo
   const handleClick = (category: string) => {
     const params = new URLSearchParams(currentParams);
 
-    if (category === selectedCategory) {
+    if (category === 'All') {
       params.delete('category');
     } else {
       params.set('category', category);
@@ -41,19 +42,19 @@ export default function CategoryFilterRow({ selectedCategory }: CategoryFilterRo
   return (
     <div className="flex flex-wrap gap-3">
       {categories.map((category) => {
-        const isActive = selectedCategory === category.key;
+        const isActive = category === (selectedCategory || 'All');
+
         return (
           <button
-            key={category.key}
-            onClick={() => handleClick(category.key)}
-            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
+            key={category}
+            onClick={() => handleClick(category)}
+            className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
               isActive
-                ? 'bg-purple-600 text-white shadow'
-                : 'border border-purple-200 bg-white text-slate-700 hover:border-purple-400'
+                ? 'border-brand-600 bg-brand-600 text-white shadow-card'
+                : 'border-slate-200 bg-white text-slate-700 hover:border-brand-400 hover:text-brand-700'
             }`}
           >
-            <span>{category.icon}</span>
-            <span>{category.key}</span>
+            {category}
           </button>
         );
       })}
