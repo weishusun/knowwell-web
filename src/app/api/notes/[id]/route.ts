@@ -2,6 +2,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 
 interface Params {
   params: { id: string };
@@ -77,6 +78,10 @@ export async function PATCH(request: Request, { params }: Params) {
       data: updateData
     });
 
+    revalidatePath(`/k-note/${id}`);
+    revalidatePath('/k-note');
+    revalidatePath('/dashboard/k-note');
+
     return NextResponse.json(updatedNote);
   } catch (error) {
     console.error('[NOTE_PATCH]', error);
@@ -108,6 +113,9 @@ export async function DELETE(_request: Request, { params }: Params) {
     await prisma.note.delete({
       where: { id }
     });
+
+    revalidatePath('/k-note');
+    revalidatePath('/dashboard/k-note');
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
