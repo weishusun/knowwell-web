@@ -90,10 +90,15 @@ export function HomeNavbar({ activeHref, activeLabel }: HomeNavbarProps) {
             </Link>
             {session ? (
               <div className="flex items-center gap-3 rounded-full border border-purple-100 bg-white px-3 py-2 shadow-sm">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700">
-                  {initial}
-                </div>
-                <span className="max-w-[140px] truncate text-sm font-semibold text-slate-800">{displayName}</span>
+                <Link
+                  href="/me"
+                  className="flex items-center gap-3 rounded-full px-1 py-1 transition hover:bg-purple-50"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700">
+                    {initial}
+                  </div>
+                  <span className="max-w-[140px] truncate text-sm font-semibold text-slate-800">{displayName}</span>
+                </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
