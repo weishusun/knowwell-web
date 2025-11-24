@@ -1,22 +1,16 @@
 import CategoryFilterRow from '@/components/k-note/CategoryFilterRow';
-import { KNoteCard, type KNoteCardData } from '@/components/k-note/KNoteCard';
+import KNoteCard, { type KNoteCardData } from '@/components/k-note/KNoteCard';
 
 interface KNotePageProps {
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 async function fetchKNotes(category?: string): Promise<KNoteCardData[]> {
-  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-  const url = new URL(`${baseUrl}/api/k-notes`);
+  const url = `${process.env.NEXTAUTH_URL}/api/k-notes${category ? `?category=${encodeURIComponent(category)}` : ''}`;
 
-  if (category) {
-    url.searchParams.set('category', category);
-  }
-
-  const response = await fetch(url.toString(), { cache: 'no-store' });
+  const response = await fetch(url, { cache: 'no-store' });
 
   if (!response.ok) {
-    console.error('Failed to fetch K-Notes');
     return [];
   }
 
@@ -35,7 +29,7 @@ export default async function KNotePage({ searchParams }: KNotePageProps) {
         <p className="text-sm text-gray-600">A share in this moment might be the light for someone else&apos;s decision.</p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         <CategoryFilterRow selectedCategory={categoryParam} />
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {kNotes.length > 0 ? (

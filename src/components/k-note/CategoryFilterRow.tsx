@@ -14,7 +14,11 @@ const categories = [
   { key: 'Sports', icon: '🏅' }
 ];
 
-export default function CategoryFilterRow({ selectedCategory }: { selectedCategory?: string }) {
+interface CategoryFilterRowProps {
+  selectedCategory?: string;
+}
+
+export default function CategoryFilterRow({ selectedCategory }: CategoryFilterRowProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -31,8 +35,7 @@ export default function CategoryFilterRow({ selectedCategory }: { selectedCatego
     }
 
     const queryString = params.toString();
-    const url = queryString ? `${pathname}?${queryString}` : pathname;
-    router.push(url);
+    router.push(queryString ? `${pathname}?${queryString}` : pathname);
   };
 
   return (
@@ -46,7 +49,7 @@ export default function CategoryFilterRow({ selectedCategory }: { selectedCatego
             className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
               isActive
                 ? 'bg-purple-600 text-white shadow'
-                : 'border border-purple-200 bg-white text-gray-700 hover:border-purple-400'
+                : 'border border-purple-200 bg-white text-slate-700 hover:border-purple-400'
             }`}
           >
             <span>{category.icon}</span>

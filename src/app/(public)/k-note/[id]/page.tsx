@@ -15,8 +15,8 @@ interface KNoteResponse {
   coverImageUrl?: string | null;
   createdAt: string | Date;
   author?: {
-    id: string;
-    name: string | null;
+    id?: string;
+    name?: string | null;
     image?: string | null;
   } | null;
   likes?: number | null;
@@ -24,11 +24,10 @@ interface KNoteResponse {
 }
 
 async function fetchKNote(id: string): Promise<KNoteResponse | null> {
-  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-  const response = await fetch(`${baseUrl}/api/k-notes/${id}`, { cache: 'no-store' });
+  const response = await fetch(`${process.env.NEXTAUTH_URL}/api/k-notes/${id}`, { cache: 'no-store' });
 
   if (response.status === 404) return null;
-  if (!response.ok) throw new Error('Failed to fetch K-Note');
+  if (!response.ok) return null;
 
   return response.json();
 }
@@ -41,14 +40,14 @@ export default async function KNoteDetailPage({ params }: KNoteDetailProps) {
   }
 
   return (
-    <article className="space-y-6 pb-16">
+    <article className="space-y-8 pb-16">
       {kNote.coverImageUrl ? (
-        <div className="relative h-80 w-full overflow-hidden rounded-3xl">
+        <div className="relative h-80 w-full overflow-hidden rounded-3xl bg-slate-100">
           <Image src={kNote.coverImageUrl} alt={kNote.title} fill className="object-cover" priority />
         </div>
       ) : null}
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
           <span className="rounded-full bg-purple-50 px-3 py-1 text-purple-700">{kNote.category ?? 'General'}</span>
           {Array.isArray(kNote.tags) &&
@@ -62,7 +61,13 @@ export default async function KNoteDetailPage({ params }: KNoteDetailProps) {
         {kNote.summary ? <p className="text-lg text-gray-700">{kNote.summary}</p> : null}
         <div className="flex items-center gap-4 text-sm text-gray-600">
           {kNote.author?.image ? (
-            <Image src={kNote.author.image} alt={kNote.author?.name ?? 'Author'} width={40} height={40} className="h-10 w-10 rounded-full object-cover" />
+            <Image
+              src={kNote.author.image}
+              alt={kNote.author?.name ?? 'Author'}
+              width={40}
+              height={40}
+              className="h-10 w-10 rounded-full object-cover"
+            />
           ) : null}
           <div className="flex flex-col">
             <span className="font-semibold text-gray-900">{kNote.author?.name ?? 'Unknown author'}</span>
