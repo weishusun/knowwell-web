@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { type KNoteCardData } from '@/components/k-note/KNoteCard';
 
@@ -20,7 +20,7 @@ export default function MyKNotesPage() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/k-notes?authorId=${session.user.id}`, { cache: 'no-store' });
+      const response = await fetch('/api/k-notes', { cache: 'no-store' });
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
@@ -36,6 +36,11 @@ export default function MyKNotesPage() {
 
     fetchKNotes();
   }, [session?.user?.id]);
+
+  const myNotes = useMemo(
+    () => kNotes.filter((note) => note.author?.id === session?.user?.id),
+    [kNotes, session?.user?.id]
+  );
 
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm('Are you sure you want to delete this K-Note?');
@@ -89,7 +94,7 @@ export default function MyKNotesPage() {
 
         {loading ? (
           <div className="rounded-lg bg-white p-6 text-sm text-slate-600 shadow">Loading your K-Notes...</div>
-        ) : kNotes.length === 0 ? (
+        ) : myNotes.length === 0 ? (
           <div className="rounded-lg bg-white p-6 text-sm text-slate-600 shadow">You have not created any K-Notes yet.</div>
         ) : (
           <div className="overflow-hidden rounded-lg bg-white shadow">
@@ -97,17 +102,17 @@ export default function MyKNotesPage() {
               <thead className="bg-slate-50 text-left text-sm font-semibold text-slate-700">
                 <tr>
                   <th className="px-4 py-3">Title</th>
-                  <th className="px-4 py-3">Category</th>
                   <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Created</th>
                   <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
-                {kNotes.map((note) => (
+                {myNotes.map((note) => (
                   <tr key={note.id} className="hover:bg-slate-50">
                     <td className="px-4 py-3 font-medium text-slate-900">{note.title}</td>
-                    <td className="px-4 py-3 text-slate-600">{note.category ?? 'Uncategorized'}</td>
                     <td className="px-4 py-3 text-slate-600">{note.isPublished ? 'Published' : 'Draft'}</td>
+                    <td className="px-4 py-3 text-slate-600">{new Date(note.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-2">
                         <button

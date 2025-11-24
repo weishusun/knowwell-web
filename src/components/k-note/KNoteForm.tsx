@@ -1,43 +1,56 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 
-export type KNoteFormValues = {
+export type KNoteFormData = {
   title: string;
   summary: string;
   category: string;
-  tags: string;
+  tags: string[];
   coverImageUrl: string;
   content: string;
   isPublished: boolean;
 };
 
 interface KNoteFormProps {
-  onSubmit: (values: KNoteFormValues) => Promise<void> | void;
-  loading?: boolean;
-  error?: string | null;
+  onSubmit: (data: KNoteFormData) => Promise<void> | void;
+  isSubmitting?: boolean;
+  errorMessage?: string | null;
 }
 
 const categories = ['Technology', 'Travel', 'Finance', 'Health', 'Lifestyle', 'Education', 'Business', 'Sports'];
 
-export default function KNoteForm({ onSubmit, loading = false, error }: KNoteFormProps) {
-  const [values, setValues] = useState<KNoteFormValues>({
-    title: '',
-    summary: '',
-    category: '',
-    tags: '',
-    coverImageUrl: '',
-    content: '',
-    isPublished: true
-  });
+export default function KNoteForm({ onSubmit, isSubmitting = false, errorMessage }: KNoteFormProps) {
+  const [title, setTitle] = useState('');
+  const [summary, setSummary] = useState('');
+  const [category, setCategory] = useState('');
+  const [tagsInput, setTagsInput] = useState('');
+  const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [content, setContent] = useState('');
+  const [isPublished, setIsPublished] = useState(true);
 
-  const handleChange = (field: keyof KNoteFormValues, value: string | boolean) => {
-    setValues((prev) => ({ ...prev, [field]: value }));
-  };
+  const tags = useMemo(
+    () =>
+      tagsInput
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean),
+    [tagsInput]
+  );
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await onSubmit(values);
+    await onSubmit({ title, summary, category, tags, coverImageUrl, content, isPublished });
+  };
+
+  const resetForm = () => {
+    setTitle('');
+    setSummary('');
+    setCategory('');
+    setTagsInput('');
+    setCoverImageUrl('');
+    setContent('');
+    setIsPublished(true);
   };
 
   return (
@@ -51,14 +64,14 @@ export default function KNoteForm({ onSubmit, loading = false, error }: KNoteFor
           <input
             type="checkbox"
             className="h-4 w-4 rounded border-slate-300 text-purple-600 focus:ring-purple-500"
-            checked={values.isPublished}
-            onChange={(e) => handleChange('isPublished', e.target.checked)}
+            checked={isPublished}
+            onChange={(e) => setIsPublished(e.target.checked)}
           />
           Published
         </label>
       </div>
 
-      {error ? <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
+      {errorMessage ? <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{errorMessage}</div> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
@@ -66,8 +79,8 @@ export default function KNoteForm({ onSubmit, loading = false, error }: KNoteFor
           <input
             type="text"
             required
-            value={values.title}
-            onChange={(e) => handleChange('title', e.target.value)}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-400 focus:outline-none"
             placeholder="Give your K-Note a clear title"
           />
@@ -75,14 +88,14 @@ export default function KNoteForm({ onSubmit, loading = false, error }: KNoteFor
         <div className="space-y-2">
           <label className="block text-sm font-medium text-slate-800">Category</label>
           <select
-            value={values.category}
-            onChange={(e) => handleChange('category', e.target.value)}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-400 focus:outline-none"
           >
             <option value="">Select a category</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
               </option>
             ))}
           </select>
@@ -92,8 +105,8 @@ export default function KNoteForm({ onSubmit, loading = false, error }: KNoteFor
       <div className="space-y-2">
         <label className="block text-sm font-medium text-slate-800">Summary</label>
         <textarea
-          value={values.summary}
-          onChange={(e) => handleChange('summary', e.target.value)}
+          value={summary}
+          onChange={(e) => setSummary(e.target.value)}
           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-400 focus:outline-none"
           placeholder="Briefly describe what this K-Note covers"
           rows={3}
@@ -103,8 +116,8 @@ export default function KNoteForm({ onSubmit, loading = false, error }: KNoteFor
       <div className="space-y-2">
         <label className="block text-sm font-medium text-slate-800">Content</label>
         <textarea
-          value={values.content}
-          onChange={(e) => handleChange('content', e.target.value)}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
           className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-400 focus:outline-none"
           placeholder="Write your insights here"
           rows={8}
@@ -116,8 +129,8 @@ export default function KNoteForm({ onSubmit, loading = false, error }: KNoteFor
           <label className="block text-sm font-medium text-slate-800">Tags</label>
           <input
             type="text"
-            value={values.tags}
-            onChange={(e) => handleChange('tags', e.target.value)}
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
             className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-400 focus:outline-none"
             placeholder="Comma-separated tags"
           />
@@ -126,8 +139,8 @@ export default function KNoteForm({ onSubmit, loading = false, error }: KNoteFor
           <label className="block text-sm font-medium text-slate-800">Cover Image URL</label>
           <input
             type="url"
-            value={values.coverImageUrl}
-            onChange={(e) => handleChange('coverImageUrl', e.target.value)}
+            value={coverImageUrl}
+            onChange={(e) => setCoverImageUrl(e.target.value)}
             className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-purple-400 focus:outline-none"
             placeholder="https://example.com/cover.jpg"
           />
@@ -135,25 +148,11 @@ export default function KNoteForm({ onSubmit, loading = false, error }: KNoteFor
       </div>
 
       <div className="flex justify-end gap-3">
-        <button
-          type="button"
-          className="btn-secondary"
-          onClick={() =>
-            setValues({
-              title: '',
-              summary: '',
-              category: '',
-              tags: '',
-              coverImageUrl: '',
-              content: '',
-              isPublished: true
-            })
-          }
-        >
+        <button type="button" className="btn-secondary" onClick={resetForm}>
           Reset
         </button>
-        <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? 'Saving...' : 'Publish K-Note'}
+        <button type="submit" className="btn-primary" disabled={isSubmitting}>
+          {isSubmitting ? 'Saving...' : 'Publish K-Note'}
         </button>
       </div>
     </form>

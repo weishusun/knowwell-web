@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
-import KNoteForm, { type KNoteFormValues } from '@/components/k-note/KNoteForm';
+import KNoteForm, { type KNoteFormData } from '@/components/k-note/KNoteForm';
 
 export default function NewKNotePage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!session?.user) {
@@ -34,26 +34,20 @@ export default function NewKNotePage() {
     );
   }
 
-  const handleSubmit = async (values: KNoteFormValues) => {
-    setLoading(true);
+  const handleSubmit = async (values: KNoteFormData) => {
+    setIsSubmitting(true);
     setError(null);
 
     const response = await fetch('/api/k-notes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...values,
-        tags: values.tags
-          .split(',')
-          .map((tag) => tag.trim())
-          .filter(Boolean)
-      })
+      body: JSON.stringify(values)
     });
 
-    setLoading(false);
+    setIsSubmitting(false);
 
     if (!response.ok) {
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
       setError(data.error ?? 'Unable to create K-Note.');
       return;
     }
@@ -65,7 +59,7 @@ export default function NewKNotePage() {
   return (
     <div className="min-h-screen bg-slate-100 px-4 py-10">
       <div className="mx-auto max-w-4xl">
-        <KNoteForm onSubmit={handleSubmit} loading={loading} error={error} />
+        <KNoteForm onSubmit={handleSubmit} isSubmitting={isSubmitting} errorMessage={error} />
       </div>
     </div>
   );
