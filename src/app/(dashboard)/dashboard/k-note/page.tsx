@@ -30,6 +30,14 @@ export default function MyKNotesPage() {
       }
 
       const notes = await response.json();
+
+      if (!Array.isArray(notes)) {
+        setError('Unexpected response format.');
+        setKNotes([]);
+        setLoading(false);
+        return;
+      }
+
       setKNotes(notes);
       setLoading(false);
     };
