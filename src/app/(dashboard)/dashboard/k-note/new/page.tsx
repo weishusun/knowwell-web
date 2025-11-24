@@ -52,7 +52,14 @@ export default function NewKNotePage() {
       return;
     }
 
-    const kNote = await response.json();
+    const parsed = await response.json().catch(() => null);
+    const kNote = parsed?.data ?? parsed;
+
+    if (!kNote?.id) {
+      setError('Unable to determine created K-Note ID.');
+      return;
+    }
+
     router.push(`/k-note/${kNote.id}`);
   };
 
