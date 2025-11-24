@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LoginDialog } from '@/components/auth/LoginDialog';
+import { AuthModal } from '@/components/auth/AuthModal';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,7 +19,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-black/50" />
 
       <div className="relative flex min-h-screen items-center justify-center p-6">
-        <LoginDialog open={open} onClose={handleClose} />
+        <AuthModal open={open} onClose={handleClose} />
       </div>
     </div>
   );
